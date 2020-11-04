@@ -39,6 +39,13 @@ void ReportHandler::create_report(double dt, double tstop, double delay) {
                                                                 nt.nrn_fast_imem->nrn_sav_rhs);
                 register_compartment_report(nt, m_report_config, vars_to_report);
                 break;
+            case AxonReport:
+            case DendriteReport:
+            case ApicalReport:
+                vars_to_report = get_section_vars_to_report(nt, m_report_config.target, nt._actual_v,
+                                                            m_report_config.type);
+                register_compartment_report(nt, m_report_config, vars_to_report);
+                break;
             default:
                 vars_to_report = get_custom_vars_to_report(nt, m_report_config, nodes_to_gid);
                 register_custom_report(nt, m_report_config, vars_to_report);
@@ -147,6 +154,63 @@ VarsToReport ReportHandler::get_compartment_vars_to_report(const NrnThread& nt,
                         double* variable = report_variable + idx;
                         to_report.push_back(VarWithMapping(compartment_id, variable));
                     }
+                }
+            }
+            vars_to_report[gid] = to_report;
+        }
+    }
+    return vars_to_report;
+}
+
+VarsToReport ReportHandler::get_section_vars_to_report(const NrnThread& nt,
+                                                       const std::set<int>& target,
+                                                       double* report_variable,
+                                                       ReportType type) const {
+    VarsToReport vars_to_report;
+    const auto* mapinfo = static_cast<NrnThreadMappingInfo*>(nt.mapping);
+    if (!mapinfo) {
+        std::cerr << "[COMPARTMENTS] Error : mapping information is missing for a Cell group "
+                  << nt.ncell << '\n';
+        nrn_abort(1);
+    }
+
+    for (int i = 0; i < nt.ncell; i++) {
+        int gid = nt.presyns[i].gid_;
+        if (target.find(gid) != target.end()) {
+            CellMapping* cell_mapping = mapinfo->get_cell_mapping(gid);
+            if (cell_mapping == nullptr) {
+                std::cerr
+                    << "[COMPARTMENTS] Error : Compartment mapping information is missing for gid "
+                    << gid << '\n';
+                nrn_abort(1);
+            }
+            std::vector<VarWithMapping> to_report;
+            to_report.reserve(cell_mapping->size());
+
+            std::string name;
+            switch (type) {
+                case AxonReport:
+                    name = "axon";
+                    break;
+                case DendriteReport:
+                    name = "dend";
+                    break;
+                case ApicalReport:
+                    name = "apic";
+                    break;
+                default:
+                    name = "soma";
+            }
+            
+            /** get  section list mapping for the type */
+            SecMapping* s = cell_mapping->get_seclist_mapping(name);
+            for (auto& sm : s->secmap) {
+                int compartment_id = sm.first;
+                auto& vec = sm.second;
+                for (const auto& idx : vec) {
+                    /** corresponding voltage in coreneuron voltage array */
+                    double* variable = report_variable + idx;
+                    to_report.push_back(VarWithMapping(compartment_id, variable));
                 }
             }
             vars_to_report[gid] = to_report;

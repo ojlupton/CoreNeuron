@@ -40,6 +40,19 @@
 namespace coreneuron {
 
 /*
+ * Defines the type of target, as per the following syntax:
+ * 0=Compartment, 1=Cell/Soma, Section { 2=Axon, 3=Dendrite, 4=Apical }
+ */
+enum class TargetType
+{
+    Compartment = 0,
+    Soma = 1,
+    Axon = 2,
+    Dendrite = 3,
+    Apical = 4
+};
+
+/*
  * Split filter string ("mech.var_name") into mech_id and var_name
  */
 void parse_filter_string(char* filter, ReportConfiguration& config) {
@@ -65,7 +78,7 @@ std::vector<ReportConfiguration> create_report_configurations(const char* conf_f
     char report_on[REPORT_MAX_NAME_LEN] = "";
     char raw_line[REPORT_MAX_FILEPATH_LEN] = "";
     char spikes_population[REPORT_MAX_NAME_LEN] = "";
-    int is_soma;
+    TargetType target_type;
     int* gids;
 
     FILE* fp = fopen(conf_file, "r");
@@ -85,7 +98,7 @@ std::vector<ReportConfiguration> create_report_configurations(const char* conf_f
         report.buffer_size = 4;  // default size to 4 Mb
         fgets(raw_line, REPORT_MAX_FILEPATH_LEN, fp);
         sscanf(raw_line, "\n%s %s %s %s %s %s %d %lf %lf %lf %d %d %s\n", report.name,
-               report.target_name, report.type_str, report_on, report.unit, report.format, &is_soma,
+               report.target_name, report.type_str, report_on, report.unit, report.format, &target_type,
                &report.report_dt, &report.start, &report.stop, &report.num_gids,
                &report.buffer_size, report.population_name);
         for (int i = 0; i < REPORT_MAX_NAME_LEN; i++) {
@@ -96,10 +109,24 @@ std::vector<ReportConfiguration> create_report_configurations(const char* conf_f
             if (strcmp(report_on, "i_membrane") == 0) {
                 nrn_use_fast_imem = true;
                 report.type = IMembraneReport;
-            } else if (is_soma)
-                report.type = SomaReport;
-            else
-                report.type = CompartmentReport;
+            } else {
+                switch (target_type) {
+                    case TargetType::Soma:
+                        report.type = SomaReport;
+                        break;
+                    case TargetType::Axon:
+                        report.type = AxonReport;
+                        break;
+                    case TargetType::Dendrite:
+                        report.type = DendriteReport;
+                        break;
+                    case TargetType::Apical:
+                        report.type = ApicalReport;
+                        break;
+                    default:
+                        report.type = CompartmentReport;
+                }
+            }
         } else if (strcmp(report.type_str, "synapse") == 0) {
             report.type = SynapseReport;
         } else {
