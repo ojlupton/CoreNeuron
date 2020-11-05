@@ -202,18 +202,21 @@ VarsToReport ReportHandler::get_section_vars_to_report(const NrnThread& nt,
                     name = "soma";
             }
             
-            /** get  section list mapping for the type */
-            SecMapping* s = cell_mapping->get_seclist_mapping(name);
-            for (auto& sm : s->secmap) {
-                int compartment_id = sm.first;
-                auto& vec = sm.second;
-                for (const auto& idx : vec) {
-                    /** corresponding voltage in coreneuron voltage array */
-                    double* variable = report_variable + idx;
-                    to_report.push_back(VarWithMapping(compartment_id, variable));
+            /** get  section list mapping for the type, if available */
+            if (cell_mapping->get_seclist_section_count(name) > 0)
+            {
+                SecMapping* s = cell_mapping->get_seclist_mapping(name);
+                for (auto& sm : s->secmap) {
+                    int compartment_id = sm.first;
+                    auto& vec = sm.second;
+                    for (const auto& idx : vec) {
+                        /** corresponding voltage in coreneuron voltage array */
+                        double* variable = report_variable + idx;
+                        to_report.push_back(VarWithMapping(compartment_id, variable));
+                    }
                 }
+                vars_to_report[gid] = to_report;
             }
-            vars_to_report[gid] = to_report;
         }
     }
     return vars_to_report;
