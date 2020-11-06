@@ -42,6 +42,9 @@ void ReportHandler::create_report(double dt, double tstop, double delay) {
             case AxonReport:
             case DendriteReport:
             case ApicalReport:
+            case AxonCompReport:
+            case DendriteCompReport:
+            case ApicalCompReport:
                 vars_to_report = get_section_vars_to_report(nt, m_report_config.target, nt._actual_v,
                                                             m_report_config.type);
                 register_compartment_report(nt, m_report_config, vars_to_report);
@@ -190,12 +193,15 @@ VarsToReport ReportHandler::get_section_vars_to_report(const NrnThread& nt,
             std::string name;
             switch (type) {
                 case AxonReport:
+                case AxonCompReport:
                     name = "axon";
                     break;
                 case DendriteReport:
+                case DendriteCompReport:
                     name = "dend";
                     break;
                 case ApicalReport:
+                case ApicalCompReport:
                     name = "apic";
                     break;
                 default:
@@ -203,14 +209,22 @@ VarsToReport ReportHandler::get_section_vars_to_report(const NrnThread& nt,
             }
             
             /** get  section list mapping for the type, if available */
-            if (cell_mapping->get_seclist_section_count(name) > 0)
-            {
+            if (cell_mapping->get_seclist_section_count(name) > 0) {
                 SecMapping* s = cell_mapping->get_seclist_mapping(name);
                 for (auto& sm : s->secmap) {
                     int compartment_id = sm.first;
                     auto& vec = sm.second;
-                    for (const auto& idx : vec) {
+
+                    // Get all the compartment values (otherwise, just middle point)
+                    if (type >= AxonCompReport) {
+                        for (const auto& idx : vec) {
+                            /** corresponding voltage in coreneuron voltage array */
+                            double* variable = report_variable + idx;
+                            to_report.push_back(VarWithMapping(compartment_id, variable));
+                        }
+                    } else {
                         /** corresponding voltage in coreneuron voltage array */
+                        const auto idx = vec[vec.size() / 2];
                         double* variable = report_variable + idx;
                         to_report.push_back(VarWithMapping(compartment_id, variable));
                     }

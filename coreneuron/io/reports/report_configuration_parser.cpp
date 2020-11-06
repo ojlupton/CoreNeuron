@@ -49,7 +49,10 @@ enum class TargetType
     Soma = 1,
     Axon = 2,
     Dendrite = 3,
-    Apical = 4
+    Apical = 4,
+    AxonComp = 5,
+    DendriteComp = 6,
+    ApicalComp = 7
 };
 
 /*
@@ -122,6 +125,15 @@ std::vector<ReportConfiguration> create_report_configurations(const char* conf_f
                         break;
                     case TargetType::Apical:
                         report.type = ApicalReport;
+                        break;
+                    case TargetType::AxonComp:
+                        report.type = AxonCompReport;
+                        break;
+                    case TargetType::DendriteComp:
+                        report.type = DendriteCompReport;
+                        break;
+                    case TargetType::ApicalComp:
+                        report.type = ApicalCompReport;
                         break;
                     default:
                         report.type = CompartmentReport;
