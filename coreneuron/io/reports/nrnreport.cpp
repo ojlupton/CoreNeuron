@@ -34,7 +34,7 @@ void nrn_flush_reports(double t) {
     sonata_check_and_flush(t);
 #endif
 
-    if (std::string(getenv("CORENEURON_FORCE_FLUSH")) == "true") {
+    if (getenv("CORENEURON_FORCE_FLUSH") != NULL && std::string(getenv("CORENEURON_FORCE_FLUSH")) == "true") {
         finalize_report();
     }
 }
