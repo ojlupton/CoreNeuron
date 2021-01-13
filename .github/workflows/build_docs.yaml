@@ -1,0 +1,27 @@
+name: compile-doc
+on:
+    push:
+
+jobs:
+  build:
+    name: clang-format-check
+    runs-on: ubuntu-18.04
+    steps:
+        - name: Fetch repository
+          uses: actions/checkout@v1
+        - name: Setup python
+          uses: actions/setup-python@v2
+        - name: Install python requirements
+          uses: BSFishy/pip-action@v1
+          with:
+            requirements: ./docs/docs_requirements.txt
+        - name: Configure
+          shell: bash
+          working-directory: ${{runner.workspace}}/CoreNeuron
+          run: |
+              mkdir BUILD && cd BUILD
+              cmake -DCORENRN_ENABLE_MPI=OFF -DCORENRN_ENABLE_OPENMP=OFF ..
+        - name: Compile documentation
+          shell: bash
+          working-directory: ${{runner.workspace}}/CoreNeuron/BUILD
+          run: make docs
