@@ -31,5 +31,12 @@ jobs:
         - name: Archive documentation
           uses: actions/upload-artifact@v2
           with:
-            name: coreneuron-doc
+            name: coreneuron-doc-${{ github.sha }}
             path: BUILD/docs
+        - name: Trigger RTDs build
+          uses: dfm/rtds-action@v1
+          with:
+            webhook_url: ${{ secrets.RTDS_WEBHOOK_URL }}
+            webhook_token: ${{ secrets.RTDS_WEBHOOK_TOKEN }}
+            commit_ref: ${{ github.ref }}
+
