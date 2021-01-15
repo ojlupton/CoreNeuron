@@ -10,9 +10,9 @@ python3 -m virtualenv venv
 source venv/bin/activate
 ```
 
-In order to build documentation locally, you need to pip install the [docs_requirements](docs_requirements.txt) :
+In order to build documentation locally, you need to pip install the [requirements](requirements.txt) :
 ```
-pip3 install --user -r docs/docs_requirements.txt --upgrade
+pip3 install --user -r docs/requirements.txt --upgrade
 ```
 
 Then in your CMake build folder:
