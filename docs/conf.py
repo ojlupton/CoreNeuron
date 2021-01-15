@@ -32,7 +32,8 @@ extensions = [
     'sphinx.ext.autosummary',
     'sphinx.ext.autosectionlabel',
     'recommonmark',
-    'sphinx.ext.mathjax'
+    'sphinx.ext.mathjax',
+    'rtds_action'
 ]
 
 source_suffix = {
@@ -70,3 +71,8 @@ html_css_files = [
 ]
 
 nbsphinx_allow_errors = True
+
+rtds_action_github_repo = "BlueBrain/CoreNeuron"
+rtds_action_path = "doc"
+rtds_action_artifact_prefix = "coreneuron-doc-"
+rtds_action_github_token = os.environ["GITHUB_TOKEN"]
