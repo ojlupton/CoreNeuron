@@ -72,7 +72,9 @@ html_css_files = [
 
 nbsphinx_allow_errors = True
 
-rtds_action_github_repo = "BlueBrain/CoreNeuron"
-rtds_action_path = "doc"
-rtds_action_artifact_prefix = "coreneuron-doc-"
-rtds_action_github_token = os.environ["GITHUB_TOKEN"]
+import os
+if os.environ.get("READTHEDOCS"):
+    rtds_action_github_repo = "BlueBrain/CoreNeuron"
+    rtds_action_path = "doc"
+    rtds_action_artifact_prefix = "coreneuron-doc-"
+    rtds_action_github_token = os.environ["GITHUB_TOKEN"]
