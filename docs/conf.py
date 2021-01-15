@@ -32,8 +32,7 @@ extensions = [
     'sphinx.ext.autosummary',
     'sphinx.ext.autosectionlabel',
     'recommonmark',
-    'sphinx.ext.mathjax',
-    'rtds_action'
+    'sphinx.ext.mathjax'
 ]
 
 source_suffix = {
@@ -74,6 +73,7 @@ nbsphinx_allow_errors = True
 
 import os
 if os.environ.get("READTHEDOCS"):
+    extensions.append('rtds_action')
     rtds_action_github_repo = "BlueBrain/CoreNeuron"
     rtds_action_path = "doc"
     rtds_action_artifact_prefix = "coreneuron-doc-"
