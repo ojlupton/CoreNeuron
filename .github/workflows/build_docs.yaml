@@ -29,13 +29,13 @@ jobs:
           working-directory: ${{runner.workspace}}/CoreNeuron/BUILD
           run: |
               make docs
-              mkdir -p _build/html
-              mv docs/* _build/html
+              mkdir -p output/_build/html
+              mv docs/* output/_build/html
         - name: Archive documentation
           uses: actions/upload-artifact@v2
           with:
             name: coreneuron-doc-${{ github.sha }}
-            path: BUILD/_build
+            path: BUILD/output
         - name: Trigger RTDs build
           uses: dfm/rtds-action@v1
           with:
