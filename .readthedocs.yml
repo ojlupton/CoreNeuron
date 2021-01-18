@@ -1,2 +1,6 @@
 # We create this file to disable generation of pdf and epub
 version: 2
+
+python:
+  install:
+    - requirements: docs/requirements.txt
