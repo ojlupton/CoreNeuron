@@ -1,6 +1,5 @@
 name: compile-doc
-on:
-    push:
+on: [push, release]
 
 jobs:
   build:
