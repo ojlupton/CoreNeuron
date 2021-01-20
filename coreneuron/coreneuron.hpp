@@ -34,17 +34,8 @@
 namespace coreneuron {
 
 // from nrnoc/capac.c
-extern void nrn_init_capacitance(NrnThread*, Memb_list*, int);
-extern void nrn_cur_capacitance(NrnThread* _nt, Memb_list* ml, int type);
-extern void nrn_alloc_capacitance(double* data, Datum* pdata, int type);
-
-// from nrnoc/eion.c
-extern void nrn_init_ion(NrnThread*, Memb_list*, int);
-extern void nrn_cur_ion(NrnThread* _nt, Memb_list* ml, int type);
-extern void nrn_alloc_ion(double* data, Datum* pdata, int type);
-extern void second_order_cur(NrnThread* _nt, int secondorder);
-
-using DependencyTable = std::vector<std::vector<int>>;
+extern void nrn_init_capacitance(NrnThread*, Memb_list*, int); extern void nrn_cur_capacitance(NrnThread* _nt, Memb_list* ml, int type); extern void nrn_alloc_capacitance(double* data, Datum* pdata, int type); // from nrnoc/eion.c
+extern void nrn_init_ion(NrnThread*, Memb_list*, int); extern void nrn_cur_ion(NrnThread* _nt, Memb_list* ml, int type); extern void nrn_alloc_ion(double* data, Datum* pdata, int type); extern void second_order_cur(NrnThread* _nt, int secondorder); using DependencyTable = std::vector<std::vector<int>>;
 
 /**
  * A class representing the CoreNEURON state, holding pointers to the various data structures
