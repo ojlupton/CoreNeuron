@@ -24,6 +24,8 @@ jobs:
           shell: bash
           working-directory: ${{runner.workspace}}/CoreNeuron/BUILD
           run: make check-clang-format
+          env:
+              VERBOSE: 1
         - name: Run cmake-format
           shell: bash
           working-directory: ${{runner.workspace}}/CoreNeuron/BUILD
