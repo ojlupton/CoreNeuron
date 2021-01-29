@@ -34,12 +34,13 @@ jobs:
         run:  |
           mkdir build && cd build
           cmake .. -DCORENRN_ENABLE_MPI=ON -DCMAKE_C_FLAGS="-coverage -O0" -DCMAKE_CXX_FLAGS="-coverage -O0";
-          make
+          make -j2
           (cd ..;  lcov --capture  --initial --directory . --no-external --output-file build/coverage-base.info)
-          lcov --remove coverage-base.info --output-file coverage-base-filtered.info "*/external/*"
           make test
           (cd ..; lcov --capture  --directory . --no-external --output-file build/coverage-run.info)
-          lcov --add-tracefile coverage-base-filtered.info --add-tracefile coverage-run.info --output-file coverage-combined.info
-          genhtml coverage-combined.info --output-directory coverage --demangle-cpp --ignore-errors source
-          bash <(curl -s https://codecov.io/bash)
+          lcov --add-tracefile coverage-base.info --add-tracefile coverage-run.info --output-file coverage-combined.info
+          lcov --remove coverage-combined.info --output-file coverage.info "*/external/*"
+          lcov --list coverage.info
+      - name: Upload to codecov.io
+        run: bash <(curl -s https://codecov.io/bash) -f build/coverage.info
 
