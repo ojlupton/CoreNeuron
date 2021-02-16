@@ -17,11 +17,24 @@
 #include <string>
 #include <vector>
 #include <set>
+#include <unordered_map>
 
 #define REPORT_MAX_NAME_LEN     256
 #define REPORT_MAX_FILEPATH_LEN 4096
 
 namespace coreneuron {
+
+struct ALU {
+    std::vector<double> summation_ = {};
+    std::unordered_map<int, std::vector<double*>> currents_;
+    ALU() {}
+};
+
+struct ALUMapping {
+    std::unordered_map<std::string, ALU> report_ALU_;
+    ALUMapping() {}
+};
+
 // name of the variable in mod file that is used to indicate which synapse
 // is enabled or disable for reporting
 #define SELECTED_VAR_MOD_NAME "selected_for_report"
@@ -30,7 +43,7 @@ namespace coreneuron {
 #define SYNAPSE_ID_MOD_NAME "synapseID"
 
 // enumerate that defines the type of target report requested
-enum ReportType { SomaReport, CompartmentReport, SynapseReport, IMembraneReport, SectionReport };
+enum ReportType { SomaReport, CompartmentReport, SynapseReport, IMembraneReport, SectionReport, SummationReport };
 
 // enumerate that defines the section type for a Section report
 enum SectionType { Axon, Dendrite, Apical };
@@ -39,8 +52,9 @@ struct ReportConfiguration {
     std::string name;               // name of the report
     std::string output_path;        // full path of the report
     std::string target_name;        // target of the report
-    std::string mech_name;          // mechanism name
-    std::string var_name;           // variable name
+    std::vector<std::string> mech_names;          // mechanism names
+    std::vector<std::string> var_names;           // variable names
+    std::vector<int> mech_ids;                    // mechanisms
     std::string unit;               // unit of the report
     std::string format;             // format of the report (Bin, hdf5, SONATA)
     std::string type_str;           // type of report string
@@ -48,7 +62,6 @@ struct ReportConfiguration {
     ReportType type;                // type of the report
     SectionType section_type;       // type of section report
     bool section_all_compartments;  // flag for section report (all values)
-    int mech_id;                    // mechanism
     double report_dt;               // reporting timestep
     double start;                   // start time of report
     double stop;                    // stop time of report
