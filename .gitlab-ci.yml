@@ -65,7 +65,7 @@ test:neuron:intel:
   stage: test_neuron
   before_script:
     - !reference [.ctest, before_script]
-    # Wipe Slurm environment to try and keep mpiexec happy.
+    # Wipe Slurm environment to try and keep mpiexec happy. It would be nice to avoid this.
     - unset $(env|awk -F= '/^SLURM_/ {if (match($1, "_(ACCOUNT|PARTITION)$")==0) print $1}')
   extends:
     - .ctest
